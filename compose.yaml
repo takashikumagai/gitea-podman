@@ -12,7 +12,11 @@ services:
       - GITEA__database__HOST=db:5432
       - GITEA__database__NAME=gitea
       - GITEA__database__USER=gitea
-      - GITEA__database__PASSWD=gitea
+      - GITEA__database__PASSWD=${GITEA_POSTGRES_PASSWORD:?Postgres password must be set}
+      # Note that this does not disable user creation from command line
+      # with '/app/gitea/gitea admin user create'
+      - GITEA__service__DISABLE_REGISTRATION=true
+      - GITEA__service__REQUIRE_SIGNIN_VIEW=true
     restart: always
     networks:
       - gitea
@@ -21,8 +25,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "3000:3000"
-      - "222:22"
+      - "3450:3000"
+      - "6022:22"
     depends_on:
       - db
 
