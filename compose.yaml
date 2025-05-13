@@ -3,8 +3,11 @@ services:
     image: docker.gitea.com/gitea:1.23.7
     container_name: gitea
     environment:
-      - USER_UID=1000
-      - USER_GID=1000
+      # Fallback to 1000 if uid/gid is not defined.
+      # Note that it's not -1000 that we fall back to, i.e. ${VAR:-hello}
+      # falls back to hello, NOT -hello
+      - USER_UID=${PODMAN_UID:-1000}
+      - USER_GID=${PODMAN_GID:-1000}
       - GITEA__database__DB_TYPE=postgres
       - GITEA__database__HOST=db:5432
       - GITEA__database__NAME=gitea
@@ -28,7 +31,7 @@ services:
     restart: always
     environment:
       - POSTGRES_USER=gitea
-      - POSTGRES_PASSWORD=gitea
+      - POSTGRES_PASSWORD=${GITEA_POSTGRES_PASSWORD:?Postgres password must be set}
       - POSTGRES_DB=gitea
     networks:
       - gitea
